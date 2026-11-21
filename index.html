@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="Live camera filters for photos and videos." />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./icon-512.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>VinCam</title>
+  </head>
+  <body>
+    <!-- 1. Permission gate -->
+    <section id="gate" class="screen gate">
+      <div class="gate-glow"></div>
+      <div class="gate-card">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5f8f"/><stop offset="1" stop-color="#ffb347"/></linearGradient></defs><rect x="4" y="14" width="56" height="40" rx="12" fill="url(#lg)"/><rect x="22" y="8" width="20" height="10" rx="4" fill="url(#lg)"/><circle cx="32" cy="34" r="12" fill="#111"/><circle cx="32" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/><circle cx="50" cy="23" r="2.5" fill="#fff"/></svg>
+        </div>
+        <h1>VinCam</h1>
+        <p class="lede">Live filters for photos &amp; videos.</p>
+        <ul class="perks">
+          <li><span>✦</span> 17 real-time filters</li>
+          <li><span>◉</span> Photo and video capture</li>
+          <li><span>⤓</span> Save straight to your gallery</li>
+        </ul>
+        <p id="gate-msg" class="gate-msg">VinCam needs access to your camera to show live filters. Nothing is uploaded — everything stays on your device.</p>
+        <button id="gate-btn" class="btn-primary">Allow camera access</button>
+        <p id="gate-help" class="gate-help" hidden></p>
+      </div>
+    </section>
+
+    <!-- 2. Camera -->
+    <section id="camera" class="screen camera" hidden>
+      <canvas id="view"></canvas>
+      <video id="src" playsinline muted autoplay></video>
+      <div id="flash" class="flash"></div>
+      <div id="countdown" class="countdown" hidden></div>
+
+      <header class="topbar">
+        <button id="timer-btn" class="icon-btn" aria-label="Self-timer">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
+          <span id="timer-label" class="badge" hidden></span>
+        </button>
+        <div id="rec-pill" class="rec-pill" hidden><i></i><span id="rec-time">00:00</span></div>
+        <span class="spacer"></span>
+      </header>
+
+      <div id="filter-name" class="filter-name"></div>
+
+      <footer class="bottom">
+        <div id="amount-row" class="amount-row">
+          <span>Intensity</span>
+          <input id="amount" type="range" min="0" max="100" value="100" aria-label="Filter intensity" />
+        </div>
+        <div id="carousel" class="carousel">
+          <div id="carousel-track" class="carousel-track">
+            <canvas id="thumbs"></canvas>
+          </div>
+        </div>
+        <div class="modes" role="tablist">
+          <button class="mode active" data-mode="photo" role="tab">Photo</button>
+          <button class="mode" data-mode="video" role="tab">Video</button>
+        </div>
+        <div class="controls">
+          <button id="last" class="last" aria-label="Your captures"><span id="last-count" class="badge" hidden></span></button>
+          <button id="shutter" class="shutter" aria-label="Take photo"><i></i></button>
+          <button id="flip" class="icon-btn big" aria-label="Switch camera">
+            <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9M4 13a8 8 0 0 0 14.3 4.9"/><path d="M5 3v3.5h3.5M19 21v-3.5h-3.5"/></svg>
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- 3. Review a capture -->
+    <section id="review" class="screen review" hidden>
+      <div class="review-media" id="review-media"></div>
+      <header class="topbar">
+        <button id="review-close" class="icon-btn" aria-label="Back to camera">
+          <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <div id="review-meta" class="review-meta"></div>
+        <button id="review-delete" class="icon-btn" aria-label="Delete">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        </button>
+      </header>
+      <footer class="review-actions">
+        <button id="review-share" class="btn-ghost">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 13v7h14v-7"/></svg> Share
+        </button>
+        <button id="review-save" class="btn-primary">
+          <svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg> <span id="save-label">Save to Gallery</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- 4. Session captures -->
+    <section id="gallery" class="screen gallery" hidden>
+      <header class="gallery-head">
+        <button id="gallery-close" class="icon-btn" aria-label="Back to camera">
+          <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <h2>Captures</h2>
+        <button id="save-all" class="btn-small">Save all</button>
+      </header>
+      <p class="gallery-note">Captures from this session. Saved items show a ✓.</p>
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
